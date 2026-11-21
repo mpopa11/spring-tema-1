@@ -1,7 +1,9 @@
 package com.luxoft.bankapp.service.storage;
 
 import com.luxoft.bankapp.model.Client;
+import org.springframework.stereotype.Service;
 
+@Service("storage")
 public class ClientStorage extends MapStorage<Client>
 {
     @Override

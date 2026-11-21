@@ -6,11 +6,13 @@ import com.luxoft.bankapp.exceptions.NotEnoughFundsException;
 import com.luxoft.bankapp.model.*;
 import com.luxoft.bankapp.service.storage.Storage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@Service("banking")
 public class BankingImpl implements Banking
 {
     @Autowired
