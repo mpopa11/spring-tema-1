@@ -20,8 +20,8 @@
     </bean>
 
     <bean id="client1" class="com.luxoft.bankapp.model.Client">
-        <constructor-arg index="0" value="${client1}" />
-        <constructor-arg index="1" value="MALE" />
+        <constructor-arg name="name" value="${client1}" />
+        <constructor-arg name="gender" value="MALE" />
         <property name="storage" ref="storage" />
         <property name="accounts">
             <set>
@@ -36,8 +36,8 @@
     </bean>
 
     <bean id="client2" class="com.luxoft.bankapp.model.Client">
-        <constructor-arg index="0" value="${client2}" />
-        <constructor-arg index="1" value="MALE" />
+        <constructor-arg name="name" value="${client2}" />
+        <constructor-arg name="gender" value="MALE" />
         <property name="storage" ref="storage" />
         <property name="accounts">
             <set>
