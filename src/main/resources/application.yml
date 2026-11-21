@@ -8,6 +8,11 @@ spring:
     profiles: dev
 debug: true
 
+
+audit:
+    amount:
+        deposit: 99
+        withdrawal: 99
 ---
 
 spring:

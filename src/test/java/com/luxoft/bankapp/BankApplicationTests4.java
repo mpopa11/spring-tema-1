@@ -1,11 +1,11 @@
 package com.luxoft.bankapp;
 
+import com.luxoft.bankapp.BankApplication;
 import com.luxoft.bankapp.exceptions.NotEnoughFundsException;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.CheckingAccount;
 import com.luxoft.bankapp.model.Client;
 import com.luxoft.bankapp.service.Banking;
-import com.luxoft.bankapp.service.audit.Audit;
 import com.luxoft.bankapp.service.audit.AuditService;
 import com.luxoft.bankapp.service.operations.BankingOperationsService;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(classes = BankApplication.class)
@@ -23,7 +24,8 @@ public class BankApplicationTests4
     private Banking banking;
 
     @Autowired
-    private BankingOperationsService bankingOperationsService;
+    private BankingOperationsService
+            bankingOperationsService;
 
     @Autowired
     private AuditService auditService;
@@ -43,11 +45,13 @@ public class BankApplicationTests4
     {
         double amount = 100;
 
-        int countOfEvents = auditService.getEvents().size();
+        int countOfEvents =
+                auditService.getEvents().size();
 
         bankingOperationsService.deposit(client, amount);
 
-        assertEquals(auditService.getEvents().size(), countOfEvents + 1);
+        assertEquals( countOfEvents + 1,
+                auditService.getEvents().size());
     }
 
     @Test
@@ -56,22 +60,26 @@ public class BankApplicationTests4
         Account account = client.getActiveAccount();
         double amount = 100;
 
-        int countOfEvents = auditService.getEvents().size();
+        int countOfEvents =
+                auditService.getEvents().size();
 
-        bankingOperationsService.deposit(account, amount);
+        bankingOperationsService
+                .deposit(account, amount);
 
-        assertEquals(auditService.getEvents().size(), countOfEvents + 1);
+        assertEquals( countOfEvents + 1,
+                auditService.getEvents().size());
     }
 
     @Test
     public void getClientBalance()
     {
-        int countOfEvents = auditService.getEvents().size();
+        int countOfEvents =
+                auditService.getEvents().size();
 
         bankingOperationsService.getBalance(client);
 
-        assertEquals(auditService.getEvents().size(), countOfEvents + 1);
-
+        assertEquals( countOfEvents + 1,
+                auditService.getEvents().size());
     }
 
     @Test
@@ -79,12 +87,14 @@ public class BankApplicationTests4
     {
         double amount = 100;
 
-        int countOfEvents = auditService.getEvents().size();
+        int countOfEvents =
+                auditService.getEvents().size();
 
-        bankingOperationsService.withdraw(client, amount);
+        bankingOperationsService
+                .withdraw(client, amount);
 
-        assertEquals(auditService.getEvents().size(), countOfEvents + 2);
-
+        assertEquals( countOfEvents + 2,
+                auditService.getEvents().size());
     }
 
     @Test
@@ -93,11 +103,14 @@ public class BankApplicationTests4
         Account account = client.getActiveAccount();
         double amount = 100;
 
-        int countOfEvents = auditService.getEvents().size();
+        int countOfEvents =
+                auditService.getEvents().size();
 
-        bankingOperationsService.withdraw(account, amount);
+        bankingOperationsService
+                .withdraw(account, amount);
 
-        assertEquals(auditService.getEvents().size(), countOfEvents + 2);
+        assertEquals( countOfEvents + 2,
+                auditService.getEvents().size());
     }
 
     @Test
@@ -109,17 +122,22 @@ public class BankApplicationTests4
 
         if (account instanceof CheckingAccount)
         {
-            overdraft = ((CheckingAccount) account).getOverdraft();
+            overdraft =
+                    ((CheckingAccount) account).getOverdraft();
         }
 
         double amount = balance + overdraft + 1000;
 
-        int countOfEvents = auditService.getEvents().size();
+        int countOfEvents =
+                auditService.getEvents().size();
 
         assertThrows(NotEnoughFundsException.class,
-                () -> bankingOperationsService.withdraw(account, amount));
+                () ->
+                        bankingOperationsService
+                                .withdraw(account, amount));
 
-        assertEquals(auditService.getEvents().size(), countOfEvents + 2);
+        assertEquals(auditService.getEvents().size(),
+                countOfEvents + 2);
     }
 
 }

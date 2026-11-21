@@ -4,8 +4,10 @@ import com.luxoft.bankapp.service.audit.events.AccountEvent;
 import com.luxoft.bankapp.service.audit.events.BalanceEvent;
 import com.luxoft.bankapp.service.audit.events.DepositEvent;
 import com.luxoft.bankapp.service.audit.events.WithdrawEvent;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,19 +22,26 @@ public class AuditService implements Audit
     }
 
     @Override
-    @EventListener
+    @EventListener(condition = "#event.amount >= @eventConditionFilter.depositLimit")
     public void auditOperation(DepositEvent event)
     {
         events.add(event);
-        System.out.println("ACCOUNT ID: " + event.getAccountId() + " " + event.getSource() + ": " + event.getAmount());
+        System.out.println("ACCOUNT ID: "
+                + event.getAccountId() + " "
+                + event.getSource() +
+                ": " + event.getAmount());
     }
 
     @Override
-    @EventListener
+    @EventListener(condition = "#event.amount >= @eventConditionFilter.withdrawalLimit")
     public void auditOperation(WithdrawEvent event)
     {
         events.add(event);
-        System.out.println("ACCOUNT ID: " + event.getAccountId() + " " + event.getState() + " " + event.getSource() + ": " + event.getAmount());
+        System.out.println("ACCOUNT ID: "
+                + event.getAccountId() + " "
+                + event.getState() + " "
+                + event.getSource() + ": "
+                + event.getAmount());
     }
 
     @Override
@@ -40,7 +49,9 @@ public class AuditService implements Audit
     public void auditOperation(BalanceEvent event)
     {
         events.add(event);
-        System.out.println("ACCOUNT ID: " + event.getAccountId() + " " + event.getSource());
+        System.out.println("ACCOUNT ID: "
+                + event.getAccountId() + " "
+                + event.getSource());
     }
 
     public List<AccountEvent> getEvents()
@@ -48,3 +59,5 @@ public class AuditService implements Audit
         return new ArrayList<>(events);
     }
 }
+
+

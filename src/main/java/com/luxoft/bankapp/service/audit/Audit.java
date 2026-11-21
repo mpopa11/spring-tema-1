@@ -4,11 +4,17 @@ import com.luxoft.bankapp.service.audit.events.BalanceEvent;
 import com.luxoft.bankapp.service.audit.events.DepositEvent;
 import com.luxoft.bankapp.service.audit.events.WithdrawEvent;
 
-public interface Audit
-{
+public interface Audit {
+
+    public enum WithdrawState
+    {
+        TRYING, SUCCESSFUL, FAILED
+    }
+
     void auditOperation(DepositEvent event);
 
     void auditOperation(WithdrawEvent event);
 
     void auditOperation(BalanceEvent event);
+
 }

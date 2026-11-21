@@ -15,12 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
-@Aspect
 @Configuration
-public class AuditAspect
-{
+@Aspect
+public class AuditAspect {
+
     @Autowired
     private ApplicationContext applicationContext;
+
 
     @Pointcut("execution(* com.luxoft.bankapp.service.operations.*.deposit(..))")
     public void anyDeposit() {}
@@ -31,41 +32,33 @@ public class AuditAspect
     @Pointcut("execution(* com.luxoft.bankapp.service.operations.*.getBalance(..))")
     public void anyBalance() {}
 
+    private long getAccountId(Object[] methodArgs)
+    {
+        Account account;
+
+        if (methodArgs[0] instanceof Client)
+        {
+            account = ((Client)  methodArgs[0])
+                    .getActiveAccount();
+        }
+        else
+        {
+            account = (Account) methodArgs[0];
+        }
+
+        return account.getId();
+    }
+
     @Before("anyDeposit()")
     public void logDeposit(JoinPoint joinPoint)
     {
         Object[] methodArgs = joinPoint.getArgs();
 
         applicationContext.publishEvent(
-                new DepositEvent(getAccountId(methodArgs), (double) methodArgs[1]));
-    }
+                new DepositEvent(getAccountId(methodArgs),
+                        (double) methodArgs[1]));
 
-    @Around("anyWithdraw()")
-    public Object logWithdrawal(ProceedingJoinPoint thisJoinPoint) throws Throwable
-    {
-        Object[] methodArgs = thisJoinPoint.getArgs();
 
-        applicationContext.publishEvent(
-                new WithdrawEvent(getAccountId(methodArgs), (double) methodArgs[1]));
-
-        Object result;
-        try
-        {
-            result = thisJoinPoint.proceed();
-
-            applicationContext.publishEvent(
-                    new WithdrawEvent(getAccountId(methodArgs),
-                            (double) methodArgs[1], WithdrawEvent.State.SUCCESSFUL));
-        }
-        catch (Exception e)
-        {
-            applicationContext.publishEvent(
-                    new WithdrawEvent(getAccountId(methodArgs),
-                            (double) methodArgs[1], WithdrawEvent.State.FAILED));
-            throw e;
-        }
-
-        return result;
     }
 
     @Before("anyBalance()")
@@ -77,19 +70,40 @@ public class AuditAspect
                 new BalanceEvent(getAccountId(methodArgs)));
     }
 
-    private long getAccountId(Object[] methodArgs)
+    @Around("anyWithdraw()")
+    public Object logWithdrawal(ProceedingJoinPoint thisJoinPoint) throws Throwable
     {
-        Account account;
+        Object[] methodArgs = thisJoinPoint.getArgs();
 
-        if (methodArgs[0] instanceof Client)
+        long accountId = getAccountId(methodArgs);
+
+        applicationContext.publishEvent(
+                new WithdrawEvent(getAccountId(methodArgs),
+                        (double) methodArgs[1]));
+
+
+        Object result;
+
+        try
         {
-            account = ((Client)  methodArgs[0]).getActiveAccount();
+            result = thisJoinPoint.proceed();
+
+            applicationContext.publishEvent(
+                    new WithdrawEvent(getAccountId(methodArgs),
+                            (double) methodArgs[1],
+                            WithdrawEvent.State.SUCCESSFUL));
         }
-        else
+        catch (Exception e)
         {
-            account = (Account) methodArgs[0];
+            applicationContext.publishEvent(
+                    new WithdrawEvent(getAccountId(methodArgs),
+                            (double) methodArgs[1],
+                            WithdrawEvent.State.FAILED));
+
+            throw e;
         }
 
-        return account.getId();
+        return result;
     }
+
 }
