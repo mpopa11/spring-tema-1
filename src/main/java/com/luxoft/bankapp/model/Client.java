@@ -106,6 +106,12 @@ public class Client implements Identifiable, Serializable
         return null;
     }
 
+    public void setAccounts(Set<Account> accounts)
+    {
+        this.accounts.clear();
+        this.accounts.addAll(accounts);
+    }
+
     public void addAccount(Account account) throws AccountNumberLimitException
     {
         if (accounts.size() >= 2)
